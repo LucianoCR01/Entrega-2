@@ -1,3 +1,5 @@
+const crypto =  require("crypto")
+
 class ProductManager {
     
     constructor(){
@@ -5,7 +7,7 @@ class ProductManager {
     }
     
     addProduct(title, description, price, thumbnail, code, stock, id = 0){
-        let idd = this.products.length
+        let idd = crypto.randomUUID()
 
         if (arguments.length < 6){
             return console.log("Faltan argumentos")
@@ -19,7 +21,7 @@ class ProductManager {
                 thumbnail:thumbnail,
                 code:code,
                 stock:stock,
-                id:id
+                id: idd
             })
         }else{
             if (this.products.find((e)=>e.code == code)){
@@ -32,7 +34,7 @@ class ProductManager {
                     thumbnail:thumbnail,
                     code:code,
                     stock:stock,
-                    id:idd   
+                    id: idd 
                 })
             }
         }
