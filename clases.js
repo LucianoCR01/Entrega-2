@@ -1,3 +1,4 @@
+
 const crypto =  require("crypto")
 
 class ProductManager {
@@ -6,26 +7,17 @@ class ProductManager {
         this.products = []
     }
     
-    addProduct(title, description, price, thumbnail, code, stock, id = 0){
-        let idd = crypto.randomUUID()
+    addProduct(title, description, price, thumbnail, code, stock){
+        let id = crypto.randomUUID()
+        let argumentos = arguments.length ?? 0
 
-        if (arguments.length < 6){
+
+        if (argumentos < 6){
             return console.log("Faltan argumentos")
-        }
-
-        if (this.products === 0){
-            this.products.push({
-                title: title,
-                description:description,
-                price:price,
-                thumbnail:thumbnail,
-                code:code,
-                stock:stock,
-                id: idd
-            })
-        }else{
+            }
+            else{
             if (this.products.find((e)=>e.code == code)){
-                console.log("el code esta repetido")
+            return console.log("el code esta repetido")
             }else{
                 this.products.push({
                     title: title,
@@ -34,22 +26,22 @@ class ProductManager {
                     thumbnail:thumbnail,
                     code:code,
                     stock:stock,
-                    id: idd 
+                    id: id 
                 })
             }
         }
     }
 
     getProducts(){
-        let productsList = this.products.slice();
-        console.log(productsList)
+        let productsList = this.products
+        return productsList
     }
 
     getProductById(id){
         let existID = this.products.find(e => e.id === id)
         if (existID == undefined) {
-            console.log("not found \n")
-        } else console.log(existID)
+            return "not found \n"
+        } else return existID
     }
 }
 
@@ -59,10 +51,8 @@ productos.addProduct("Manzana","Roja",200,"Prueba",123,200)
 productos.addProduct("ManzanaVerde","Verde",500,"Prueba",134,200)
 
 
+console.log(productos.getProducts())
+
+console.log(productos.getProductById(1))
 
 
-productos.getProducts()
-
-productos.getProductById(1)
-
-productos.getProductById(12412)
