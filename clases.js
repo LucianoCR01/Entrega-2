@@ -32,20 +32,26 @@ class ProductManager {
                     stock: stock,
                     id: id
                 })
-                const productsString = JSON.stringify(this.products)
+                const productsString = JSON.stringify(this.products, null, 2)
                 fs.writeFileSync(this.path, productsString)
             }
         }
     }
 
     async getProducts() {
-        let productsList = await fs.promises.readFile(this.path, "utf-8")
-        console.log(JSON.parse(productsList))
+        if (fs.existsSync(this.path)) {
+            let productsList = await fs.promises.readFile(this.path, "utf-8")
+            productsList = JSON.parse(productsList)
+            console.log((productsList))
+            return productsList
+        } else {
+            console.log("Error el archivo no existe")
+        }
+
     }
 
     async getProductById(id) {
-        let productsList = await fs.promises.readFile(this.path, "utf-8")
-        productsList = JSON.parse(productsList)
+        let productsList = await this.getProducts()
         let existID = productsList.find(e => e.id === id)
         if (existID == undefined) {
             return console.log("not found \n")
@@ -54,8 +60,7 @@ class ProductManager {
 
     async updateProduct(idActualizar, campoActualizar, actualizacion) {
         if (campoActualizar == ["title" || "description" || "price" || "thumbnail" || "code" || "stock"]) {
-            let productsList = await fs.promises.readFile(this.path, "utf-8")
-            productsList = JSON.parse(productsList)
+            let productsList = await this.getProducts()
             let existID = productsList.find(e => e.id == idActualizar)
             let indexID = productsList.findIndex(e => e.id == idActualizar)
             if (existID !== undefined) {
@@ -86,9 +91,9 @@ productos.addProduct("ManzanaVerde", "Verde", 500, "Prueba", 134, 200)
 productos.addProduct("Uva", "Violeta", 986, "Prueba", 23, 200)
 productos.addProduct("Mandarina", "Naranja", 75, "Prueba", 9, 200)
 productos.addProduct("Naranja", "Naranja", 850, "Prueba", 98, 200)
-// productos.getProducts()
+//productos.getProducts()
 
-// productos.getProductById("faf3b58e-8c6c-48be-8b03-e8d8defe1072")
+productos.getProductById("2bef3944-02ad-4aa3-a4cb-19159b9b911d")
 
 //productos.updateProduct("2bef3944-02ad-4aa3-a4cb-19159b9b911d", "title", "Sandia")
 
