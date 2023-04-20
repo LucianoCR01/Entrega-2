@@ -1,58 +1,96 @@
+const fs = require("fs")
+const crypto = require("crypto")
 
-const crypto =  require("crypto")
 
 class ProductManager {
-    
-    constructor(){
+
+    constructor(path) {
+        this.path = path
         this.products = []
+        const productsString = fs.readFileSync(this.path, "utf-8")
+        const products = JSON.parse(productsString)
+        this.products = products
     }
-    
-    addProduct(title, description, price, thumbnail, code, stock){
+
+    addProduct(title, description, price, thumbnail, code, stock) {
         let id = crypto.randomUUID()
         let argumentos = arguments.length ?? 0
 
-
-        if (argumentos < 6){
+        if (argumentos < 6) {
             return console.log("Faltan argumentos")
-            }
-            else{
-            if (this.products.find((e)=>e.code == code)){
-            return console.log("el code esta repetido")
-            }else{
+        }
+        else {
+            if (this.products.find((e) => e.code == code)) {
+                return console.log("el code esta repetido")
+            } else {
                 this.products.push({
                     title: title,
-                    description:description,
-                    price:price,
-                    thumbnail:thumbnail,
-                    code:code,
-                    stock:stock,
-                    id: id 
+                    description: description,
+                    price: price,
+                    thumbnail: thumbnail,
+                    code: code,
+                    stock: stock,
+                    id: id
                 })
+                const productsString = JSON.stringify(this.products)
+                fs.writeFileSync(this.path, productsString)
             }
         }
     }
 
-    getProducts(){
-        let productsList = this.products
-        return productsList
+    async getProducts() {
+        let productsList = await fs.promises.readFile(this.path, "utf-8")
+        console.log(JSON.parse(productsList))
     }
 
-    getProductById(id){
-        let existID = this.products.find(e => e.id === id)
+    async getProductById(id) {
+        let productsList = await fs.promises.readFile(this.path, "utf-8")
+        productsList = JSON.parse(productsList)
+        let existID = productsList.find(e => e.id === id)
         if (existID == undefined) {
-            return "not found \n"
-        } else return existID
+            return console.log("not found \n")
+        } else console.log(existID)
+    }
+
+    async updateProduct(idActualizar, campoActualizar, actualizacion) {
+        if (campoActualizar == ["title" || "description" || "price" || "thumbnail" || "code" || "stock"]) {
+            let productsList = await fs.promises.readFile(this.path, "utf-8")
+            productsList = JSON.parse(productsList)
+            let existID = productsList.find(e => e.id == idActualizar)
+            let indexID = productsList.findIndex(e => e.id == idActualizar)
+            if (existID !== undefined) {
+                existID[campoActualizar] = actualizacion
+                this.products.splice(indexID, 1, existID)
+                fs.writeFileSync(this.path, JSON.stringify(this.products))
+            }
+        } else if (campoActualizar == "id") {
+            console.log("no se puede cambiar el ID")
+        } else {
+            console.log("no soy un campo")
+        }
+    }
+
+    async deleteProduct(idBorrar) {
+        let productDelete = await fs.promises.readFile(this.path, "utf-8")
+        productDelete = JSON.parse(productDelete)
+        let indexID = productDelete.findIndex(e => e.id == idBorrar)
+        productDelete.splice(indexID, 1)
+        fs.writeFileSync(this.path, JSON.stringify(productDelete))
     }
 }
 
-const productos = new ProductManager()
+const productos = new ProductManager("productos.json")
 
-productos.addProduct("Manzana","Roja",200,"Prueba",123,200)
-productos.addProduct("ManzanaVerde","Verde",500,"Prueba",134,200)
+productos.addProduct("Manzana", "Roja", 200, "Prueba", 123, 200)
+productos.addProduct("ManzanaVerde", "Verde", 500, "Prueba", 134, 200)
+productos.addProduct("Uva", "Violeta", 986, "Prueba", 23, 200)
+productos.addProduct("Mandarina", "Naranja", 75, "Prueba", 9, 200)
+productos.addProduct("Naranja", "Naranja", 850, "Prueba", 98, 200)
+// productos.getProducts()
 
+// productos.getProductById("faf3b58e-8c6c-48be-8b03-e8d8defe1072")
 
-console.log(productos.getProducts())
+//productos.updateProduct("2bef3944-02ad-4aa3-a4cb-19159b9b911d", "title", "Sandia")
 
-console.log(productos.getProductById(1))
-
+//productos.deleteProduct("dd2aff9a-b641-48b9-87eb-3ad1b1f1f463")
 
